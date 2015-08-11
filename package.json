@@ -1,0 +1,17 @@
+{
+  "name": "castle_mysensors",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cowboymouth": "^1.0.1",
+    "p-promise": "^0.5.0",
+    "sensors": "^0.1.0",
+    "serialport": "^1.7.4"
+  }
+}
