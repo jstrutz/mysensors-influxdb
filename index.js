@@ -4,6 +4,7 @@ var P = require('p-promise'),
     Sensors = require('sensors');
 
 var getGatewaySerialPort = function() {
+  if (process.env.SERIAL_PORT) return P.resolve(process.env.SERIAL_PORT);
   var deferred = P.defer();
   console.log('Searching for usb serial port');
   SerialPort.list(function (err, ports) {
