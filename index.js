@@ -4,26 +4,30 @@ var P = require('p-promise'),
     Sensors = require('sensors');
 
 var getGatewaySerialPort = function() {
-  if (process.env.SERIAL_PORT) return P.resolve(process.env.SERIAL_PORT);
-  var deferred = P.defer();
-  console.log('Searching for usb serial port');
-  SerialPort.list(function (err, ports) {
-    // console.log(ports);
-    if (err) {
-      deferred.reject(err);
-    }
-    else {
-      for (var i = 0, il = ports.length; i < il; ++i) {
-        var portname = ports[i].comName;
-        if (portname.indexOf('usb') !== -1) {
-          console.log('Found usb serial port at', portname);
-          deferred.resolve(portname);
-        }
+  if (process.env.SERIAL_PORT) {
+    return P.resolve(process.env.SERIAL_PORT);
+  }
+  else {
+    var deferred = P.defer();
+    console.log('Searching for usb serial port');
+    SerialPort.list(function (err, ports) {
+      // console.log(ports);
+      if (err) {
+        deferred.reject(err);
       }
-      deferred.reject("No gateways found");
-    }
-  });
-  return deferred.promise;
+      else {
+        for (var i = 0, il = ports.length; i < il; ++i) {
+          var portname = ports[i].comName;
+          if (portname.indexOf('usb') !== -1) {
+            console.log('Found usb serial port at', portname);
+            deferred.resolve(portname);
+          }
+        }
+        deferred.reject("No gateways found");
+      }
+    });
+    return deferred.promise;
+  }
   // return Promise.reject();
 };
 
