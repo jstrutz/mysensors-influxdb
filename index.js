@@ -5,7 +5,7 @@ var P = require('p-promise'),
 
 var getGatewaySerialPort = function() {
   if (process.env.SERIAL_PORT) {
-    return P.resolve(process.env.SERIAL_PORT);
+    return P(process.env.SERIAL_PORT);
   }
   else {
     var deferred = P.defer();
