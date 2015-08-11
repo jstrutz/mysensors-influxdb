@@ -5,6 +5,7 @@ var P = require('p-promise'),
 
 var getGatewaySerialPort = function() {
   if (process.env.SERIAL_PORT) {
+    console.log('Using serial port set in environment variable SERIAL_PORT');
     return P(process.env.SERIAL_PORT);
   }
   else {
