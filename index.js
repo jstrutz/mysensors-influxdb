@@ -5,8 +5,9 @@ var P = require('p-promise'),
 
 var getGatewaySerialPort = function() {
   var deferred = P.defer();
+  console.log('Searching for usb serial port');
   SerialPort.list(function (err, ports) {
-    console.log(ports);
+    // console.log(ports);
     if (err) {
       deferred.reject(err);
     }
@@ -14,6 +15,7 @@ var getGatewaySerialPort = function() {
       for (var i = 0, il = ports.length; i < il; ++i) {
         var portname = ports[i].comName;
         if (portname.indexOf('usb') !== -1) {
+          console.log('Found usb serial port at', portname);
           deferred.resolve(portname);
         }
       }
@@ -22,6 +24,21 @@ var getGatewaySerialPort = function() {
   });
   return deferred.promise;
   // return Promise.reject();
+};
+
+var repeatedlyGetGatewaySerialPort = function() {
+  var deferred = P.defer();
+
+  var tryGet = function tryGet() {
+    getGatewaySerialPort().then(function(portname) {
+      deferred.resolve(portname);
+    }).fail(function() {
+      // retry in a bit
+      setTimeout(tryGet, 10000);
+    });
+  }
+  tryGet();
+  return deferred.promise;
 }
 
 var openSerialPort = function(portname, baudrate) {
@@ -50,7 +67,7 @@ var openSerialPort = function(portname, baudrate) {
 
 // var mouth = new Mouth(stream);
 
-getGatewaySerialPort()
+repeatedlyGetGatewaySerialPort()
   .then(function(portname) {
     console.log('found controller at', portname);
     return openSerialPort(portname, 115200);
