@@ -4,11 +4,11 @@ var P = require('p-promise'),
     Sensors = require('sensors');
 
 var getGatewaySerialPort = function() {
-  if (process.env.SERIAL_PORT) {
-    console.log('Using serial port set in environment variable SERIAL_PORT');
-    return P(process.env.SERIAL_PORT);
-  }
-  else {
+  // if (process.env.SERIAL_PORT) {
+  //   console.log('Using serial port set in environment variable SERIAL_PORT');
+  //   return P(process.env.SERIAL_PORT);
+  // }
+  // else {
     var deferred = P.defer();
     console.log('Searching for usb serial port');
     SerialPort.list(function (err, ports) {
@@ -28,7 +28,7 @@ var getGatewaySerialPort = function() {
       }
     });
     return deferred.promise;
-  }
+  // }
   // return Promise.reject();
 };
 
