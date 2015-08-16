@@ -1,7 +1,25 @@
 var P = require('p-promise'),
     SerialPort = require('serialport'),
     Mouth = require('cowboymouth'),
-    Sensors = require('sensors');
+    Sensors = require('sensors'),
+    StatsD = require('node-statsd');
+
+var nextDeviceId = 0,
+    statsd;
+
+
+function statsdClient() {
+  statsd = statsd || new StatsD({
+    host: process.env.STATSD_HOST,
+    port: process.env.STATSD_PORT,
+    prefix: 'mysensors.'
+  });
+  return statsd;
+}
+
+function writeMeasurement(name, value) {
+  statsdClient().gauge(name,value);
+}
 
 var getGatewaySerialPort = function() {
   if (process.env.SERIAL_PORT) {
@@ -105,7 +123,15 @@ repeatedlyGetGatewaySerialPort()
 
     mouth.on('reading', function (data) {
         var formattedData = { type: data.type, value: data.value, time: data.time };
+
+        var metricName =
+          'board' + data.boardId.toString(10) + '.addon' + data.addonId.toString(10) + '_' + data.type;
+        writeMeasurement(metricName, data.value);
         // jenny.createReading(data.boardId, data.addonId, formattedData, internals.handleError);
+        // sendMeasurement({
+        //   boardId: data.boardId,
+        //   addonId: data
+        // })
         console.log('reading', data.boardId, data.addonId, formattedData);
     });
 
@@ -115,12 +141,18 @@ repeatedlyGetGatewaySerialPort()
     });
 
     mouth.on('log', function (message) {
-      console.log('log', message);
+      // console.log('log', message);
         // jenny.log(message, internals.handleError);
     });
     mouth.on('register', function (message) {
-      console.log('ID request');
-      mouth.writeId(101);
+      console.log('register', message);
+      mouth.writeId(nextDeviceId++);
+      // client.registerDevice(message).then(function(deviceId) {
+      //   console.log('Got device id to register', deviceId);
+      //   mouth.writeId(deviceId);
+      // }).fail(function(err) {
+      //   console.error(err);
+      // });
     });
 
     mouth.on('error', function(err) {
