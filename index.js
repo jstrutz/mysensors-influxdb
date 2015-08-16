@@ -18,6 +18,7 @@ function statsdClient() {
 }
 
 function writeMeasurement(name, value) {
+  console.log("Sending gauge: ", name, value);
   statsdClient().gauge(name,value);
 }
 
