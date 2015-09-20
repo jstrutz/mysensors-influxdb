@@ -11,6 +11,7 @@ Be sure to define the following ENV vars:
 - INFLUXDB_HOST
 - INFLUXDB_PORT
 - INFLUXDB_DATABASE
+- SERIAL_PORT *the usb serial port device for your mysensors gateway.  Mine is `/dev/ttyASM0`.  Make sure you have the right permissions on it.*
 
 I'm using [dokku](https://github.com/progrium/dokku) to run this on my local LAN, for home automation purposes.
 
