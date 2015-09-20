@@ -131,7 +131,7 @@ repeatedlyGetGatewaySerialPort()
 
 
         // console.log({protocol: protocol, device: deviceKey, sensor: sensorKey, value: value, measurement: measurement, timestamp: timestamp});
-        console.log(postUrl,reqBody);
+        // console.log(postUrl,reqBody);
         // var metricName =
         //   'board' + data.boardId.toString(10) + '.addon' + data.addonId.toString(10) + '_' + data.type;
           request.post(postUrl)
