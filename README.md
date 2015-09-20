@@ -1,6 +1,6 @@
 # MySensors InfluxDB bridge
 
-A tiny node.js script to read from a serial [MySensors](http://mysensors.org) gateway, and send the received data on to InfluxDB 0.9+.  **THIS IS A HACK - Don't expect pretty code**
+A tiny node.js script to read from a serial [MySensors](http://mysensors.org) gateway, and send the received data on to InfluxDB 0.9+.  *Note - This is pretty hackey code*
 
 ## Usage
 
