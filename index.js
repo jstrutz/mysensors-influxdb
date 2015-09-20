@@ -117,21 +117,21 @@ repeatedlyGetGatewaySerialPort()
            precision = 'ms',
               dbHost = process.env.INFLUXDB_HOST || 'localhost',
               dbPort = process.env.INFLUXDB_PORT || '8086',
-              dbName = process.env.INFLUXDB_DATABASE || 'castle_dev',
-             postUrl = 'http://' + dbHost
-                     + ':' + dbPort
-                     + '/write?db=' + dbName
-                     + '&precision=' + precision,
-             reqBody = measurement
-                     + ',protocol="' + protocol + '"'
-                     + ',device="' + deviceKey + '"'
-                     + ',sensor="' + sensorKey + '"'
-                     + ' value=' + value
-                     + ' ' + timestamp;
+              dbName = process.env.INFLUXDB_DATABASE || 'castle_dev';
+        var postUrl = 'http://' + dbHost
+                    + ':' + dbPort
+                    + '/write?db=' + dbName
+                    + '&precision=' + precision;
+        var reqBody = measurement
+                    + ',protocol="' + protocol + '"'
+                    + ',device="' + deviceKey + '"'
+                    + ',sensor="' + sensorKey + '"'
+                    + ' value=' + value
+                    + ' ' + timestamp;
 
 
         // console.log({protocol: protocol, device: deviceKey, sensor: sensorKey, value: value, measurement: measurement, timestamp: timestamp});
-        console.log(reqBody);
+        console.log(postUrl,reqBody);
         // var metricName =
         //   'board' + data.boardId.toString(10) + '.addon' + data.addonId.toString(10) + '_' + data.type;
           request.post(postUrl)
@@ -139,7 +139,7 @@ repeatedlyGetGatewaySerialPort()
             .send(reqBody)
             .end(function(err, res) {
               if (err) {
-                console.error(err, res, postUrl);
+                console.error(err, res);
               }
               else {
                 // console.log("result", res);
