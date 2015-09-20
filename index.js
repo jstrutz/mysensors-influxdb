@@ -139,7 +139,7 @@ repeatedlyGetGatewaySerialPort()
             .send(reqBody)
             .end(function(err, res) {
               if (err) {
-                console.error(err, res);
+                console.error(err, res, postUrl);
               }
               else {
                 // console.log("result", res);
