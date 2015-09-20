@@ -2,25 +2,9 @@ var P = require('p-promise'),
     SerialPort = require('serialport'),
     Mouth = require('cowboymouth'),
     Sensors = require('sensors'),
-    StatsD = require('node-statsd');
+    request = require('superagent');
 
-var nextDeviceId = 0,
-    statsd;
-
-
-function statsdClient() {
-  statsd = statsd || new StatsD({
-    host: process.env.STATSD_HOST,
-    port: process.env.STATSD_PORT,
-    prefix: 'mysensors.'
-  });
-  return statsd;
-}
-
-function writeMeasurement(name, value) {
-  console.log("Sending gauge: ", name, value);
-  statsdClient().gauge(name,value);
-}
+var nextDeviceId = 0;
 
 var getGatewaySerialPort = function() {
   if (process.env.SERIAL_PORT) {
@@ -123,17 +107,52 @@ repeatedlyGetGatewaySerialPort()
     });
 
     mouth.on('reading', function (data) {
-        var formattedData = { type: data.type, value: data.value, time: data.time };
+        // var formattedData = { type: data.type, value: data.value, time: data.time };
+        var protocol = "mysensors",
+           deviceKey = data.boardId.toString(16),
+           sensorKey = data.addonId.toString(16),
+               value = data.value.toString(10),
+         measurement = (deviceKey == '66' ? 'soil_moisture' : data.type),
+           timestamp = data.time.toString(10),
+           precision = 'ms',
+              dbHost = process.env.INFLUXDB_HOST || 'localhost',
+              dbPort = process.env.INFLUXDB_PORT || '8086',
+              dbName = process.env.INFLUXDB_DATABASE || 'castle_dev',
+             postUrl = 'http://' + dbHost
+                     + ':' + dbPort
+                     + '/write?db=' + dbName
+                     + '&precision=' + precision,
+             reqBody = measurement
+                     + ',protocol="' + protocol + '"'
+                     + ',device="' + deviceKey + '"'
+                     + ',sensor="' + sensorKey + '"'
+                     + ' value=' + value
+                     + ' ' + timestamp;
 
-        var metricName =
-          'board' + data.boardId.toString(10) + '.addon' + data.addonId.toString(10) + '_' + data.type;
-        writeMeasurement(metricName, data.value);
+
+        // console.log({protocol: protocol, device: deviceKey, sensor: sensorKey, value: value, measurement: measurement, timestamp: timestamp});
+        console.log(reqBody);
+        // var metricName =
+        //   'board' + data.boardId.toString(10) + '.addon' + data.addonId.toString(10) + '_' + data.type;
+          request.post(postUrl)
+            .type('form')
+            .send(reqBody)
+            .end(function(err, res) {
+              if (err) {
+                console.error(err, res);
+              }
+              else {
+                // console.log("result", res);
+              }
+            });
+
+        // writeMeasurement(metricName, data.value);
         // jenny.createReading(data.boardId, data.addonId, formattedData, internals.handleError);
         // sendMeasurement({
         //   boardId: data.boardId,
         //   addonId: data
         // })
-        console.log('reading', data.boardId, data.addonId, formattedData);
+        // console.log('reading', data.boardId, data.addonId, formattedData);
     });
 
     mouth.on('addon', function (data) {
