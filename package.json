@@ -1,5 +1,5 @@
 {
-  "name": "castle-mysensors",
+  "name": "mysensors-influxdb",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
